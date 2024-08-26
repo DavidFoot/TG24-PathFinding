@@ -20,11 +20,13 @@ namespace GridRuntime
             propertyBlockDestination = new MaterialPropertyBlock();
             propertyBlockDefault  = new MaterialPropertyBlock();
             propertyBlockObstacle = new MaterialPropertyBlock();
-            propertyBlockEvaluate = new MaterialPropertyBlock();
+            propertyBlockEvaluated = new MaterialPropertyBlock();
+            propertyBlockCurrent = new MaterialPropertyBlock();
             propertyBlockStart.SetColor("_BaseColor", Color.blue);
             propertyBlockObstacle.SetColor("_BaseColor", Color.grey);
             propertyBlockDestination.SetColor("_BaseColor", Color.yellow);
-            propertyBlockEvaluate.SetColor("_BaseColor", Color.cyan);
+            propertyBlockEvaluated.SetColor("_BaseColor", Color.cyan);
+            propertyBlockCurrent.SetColor("_BaseColor", Color.magenta);
             propertyBlockDefault.GetColor("_BaseColor"); 
         }
 
@@ -49,8 +51,14 @@ namespace GridRuntime
         }
         public void SetEvaluateColor()
         {
-            propertyMeshRenderer.SetPropertyBlock(propertyBlockEvaluate);
+            propertyMeshRenderer.SetPropertyBlock(propertyBlockEvaluated);
         }
+
+        public void SetEvaluateCurrent()
+        {
+            propertyMeshRenderer.SetPropertyBlock(propertyBlockCurrent);
+        }
+
         public void SetDefaultColor()
         {
             propertyMeshRenderer.SetPropertyBlock(propertyBlockDefault);
@@ -93,14 +101,15 @@ namespace GridRuntime
         #region Privates & Protected
 
         [SerializeField] TextMeshPro _TextMeshPosition;
+        [SerializeField] Cell _parent;
         MaterialPropertyBlock propertyBlockStart;
         MaterialPropertyBlock propertyBlockDestination;
         MaterialPropertyBlock propertyBlockObstacle;
         MaterialPropertyBlock propertyBlockDefault;
-        MaterialPropertyBlock propertyBlockEvaluate;
+        MaterialPropertyBlock propertyBlockEvaluated;
+        MaterialPropertyBlock propertyBlockCurrent;
         MeshRenderer propertyMeshRenderer;
         bool isAnObstacle;
-        Cell _parent;
         
 
         #endregion

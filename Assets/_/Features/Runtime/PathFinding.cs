@@ -40,35 +40,38 @@ namespace GridRuntime
             if (_start == _destination) Debug.Log("Le départ et la destination sont identiques");
             if(_cellToCheck.Count > 0)
             {
-                if (_cellToCheck[0].gameObject == _destination) DestinationGoal();
-                
-                Debug.Log($"Current Cell: { _cellToCheck[0].name}");
-                
                 Cell currentCell = _cellToCheck[0].GetComponent<Cell>();
-                currentCell.SetParent(_parent);
-                currentCell.SetEvaluateColor();
+                currentCell.SetEvaluateCurrent();
+                Debug.Log(currentCell.gameObject.name, currentCell.gameObject);
+                foreach (Cell cell in _cellChecked)
+                {
+                    cell.SetEvaluateColor();
+                }
+
                 List<Cell> neighBourCells = new();
                 neighBourCells = _grid.TestGetNeighbour(currentCell);
-
                 foreach(Cell cell in neighBourCells)
                 {
                     if (cell.IsAPath() && !_cellChecked.Contains(cell) && !_cellToCheck.Contains(cell)) { 
                         _cellToCheck.Add(cell);
+                        cell.SetParent(currentCell);
                     }
                 }
                 _cellChecked.Add(currentCell);
                 _cellToCheck.RemoveAt(0);
-                
-                Debug.Log($"_cellToCheck : {String.Join(", ", _cellToCheck)}");
-                Debug.Log($"_cellChecked Cell: {String.Join(", ", _cellChecked)}");
-                _parent = currentCell;
+                if (_cellToCheck[0].gameObject == _destination) DestinationGoal(_cellToCheck[0]);
             }
         }
 
-        private void DestinationGoal()
+        private void DestinationGoal(Cell startingCell )
         {
             _isFinito = true;
-            Debug.Log("Destination");
+            Cell currentParent = startingCell;
+            do
+            {
+                currentParent.SetEvaluateCurrent();
+                currentParent = currentParent.GetParent();
+            } while (currentParent != null);
         }
 
         public void SetStart(GameObject start) => _start = start;
