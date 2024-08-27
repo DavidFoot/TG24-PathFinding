@@ -1,13 +1,19 @@
-using UnityEngine;
 using TMPro;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Collections.Generic;
+using UnityEngine;
 namespace GridRuntime
 {
+    //public enum CellState { Untested, Open, Closed }
     public class Cell : MonoBehaviour
     {
         #region Publics
+
         public Vector2Int m_positionInArray;
+        public float m_gCost;
+        public float m_hCost;
+        public float m_fCostRatio => m_gCost + m_hCost;
+        public bool m_isAnObstacle;
+        //public CellState m_cellState = CellState.Untested;
+
         #endregion
 
 
@@ -39,7 +45,12 @@ namespace GridRuntime
         {
             _TextMeshPosition.text = $"{i}-{j}";
         }
-        
+        public void SetCostRatioAstar()
+        {
+            _hValueTextMesh.text = m_hCost.ToString();
+            _gValueTextMesh.text = m_gCost.ToString();
+            _fValueTextMesh.text = m_fCostRatio.ToString();
+        }
         public void SetStartColor()
         {
             propertyMeshRenderer.SetPropertyBlock(propertyBlockStart);
@@ -62,18 +73,18 @@ namespace GridRuntime
         public void SetDefaultColor()
         {
             propertyMeshRenderer.SetPropertyBlock(propertyBlockDefault);
-            isAnObstacle = false;
+            m_isAnObstacle = false;
         }
 
         public void SetObstacleColor()
         {
             propertyMeshRenderer.SetPropertyBlock(propertyBlockObstacle);
-            isAnObstacle = true;
+            m_isAnObstacle = true;
         }
 
         public bool IsObstacle()
         {
-            return isAnObstacle;
+            return m_isAnObstacle;
         }
 
         public void SetParent(Cell parent) => _parent = parent;
@@ -89,7 +100,7 @@ namespace GridRuntime
         }
         public bool IsAPath()
         {
-            return !isAnObstacle;
+            return !m_isAnObstacle;
         }
         #endregion
 
@@ -103,6 +114,9 @@ namespace GridRuntime
         #region Privates & Protected
 
         [SerializeField] TextMeshPro _TextMeshPosition;
+        [SerializeField] TextMeshPro _hValueTextMesh;
+        [SerializeField] TextMeshPro _gValueTextMesh;
+        [SerializeField] TextMeshPro _fValueTextMesh;
         [SerializeField] Cell _parent;
         MaterialPropertyBlock propertyBlockStart;
         MaterialPropertyBlock propertyBlockDestination;
@@ -111,7 +125,7 @@ namespace GridRuntime
         MaterialPropertyBlock propertyBlockEvaluated;
         MaterialPropertyBlock propertyBlockCurrent;
         MeshRenderer propertyMeshRenderer;
-        bool isAnObstacle;
+        
         
 
         #endregion

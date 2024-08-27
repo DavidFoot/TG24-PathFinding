@@ -57,7 +57,7 @@ namespace GridRuntime
             return _gridSize;
         }
         
-        public List<Cell> TestGetNeighbour(Cell currentCell)
+        public List<Cell> GetNeighbours(Cell currentCell)
         {
             List<Cell> cells = new();
             Vector2Int coord = currentCell.m_positionInArray;

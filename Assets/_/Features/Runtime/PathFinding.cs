@@ -48,7 +48,7 @@ namespace GridRuntime
                 Debug.Log(currentCell.gameObject.name, currentCell.gameObject);
 
                 List<Cell> neighBourCells = new();
-                neighBourCells = _grid.TestGetNeighbour(currentCell);
+                neighBourCells = _grid.GetNeighbours(currentCell);
                 foreach (Cell cell in neighBourCells)
                 {
                     if (cell.IsAPath() && !_cellChecked.Contains(cell) && !_cellToCheck.Contains(cell))
@@ -66,7 +66,43 @@ namespace GridRuntime
 
         private void FindAStarPath()
         {
-            Debug.Log("Use Astar Algo");
+            if (_start == _destination) Debug.Log("Le départ et la destination sont identiques");            
+            if (_cellToCheck.Count > 0)
+            {
+                _cellToCheck.Sort((node1, node2) => node1.m_fCostRatio.CompareTo(node2.m_fCostRatio));
+                Cell currentCell = _cellToCheck[0];
+                ColorCheckedCell();
+                currentCell.SetCurrentColor();
+                _cellChecked.Add(currentCell);
+                _cellToCheck.RemoveAt(0);
+                if (currentCell.gameObject == _destination) {
+                    DestinationGoal(currentCell);
+                }
+                List<Cell> neighBourCells = new();
+                neighBourCells = _grid.GetNeighbours(currentCell);
+                foreach (Cell neighbor in neighBourCells)
+                {
+                    if (neighbor.m_isAnObstacle || _cellChecked.Contains(neighbor)) continue;
+                    float newMovementCostToNeighbor = currentCell.m_gCost + StarDistance(currentCell, neighbor);
+                    if (newMovementCostToNeighbor < neighbor.m_gCost || !_cellToCheck.Contains(neighbor))
+                    {
+                        neighbor.m_gCost = newMovementCostToNeighbor;
+                        neighbor.m_hCost  = StarDistance(neighbor, _destination.GetComponent<Cell>())*5;
+                        neighbor.SetParent(currentCell);
+                        if (!_cellToCheck.Contains(neighbor)) {
+                            _cellToCheck.Add(neighbor); 
+                        }
+                    }
+                    neighbor.SetCostRatioAstar();
+                }
+            }
+        }
+
+        private float StarDistance(Cell from, Cell to)
+        {
+            var x = Mathf.Abs(to.m_positionInArray.x - from.m_positionInArray.x);
+            var y = Mathf.Abs(to.m_positionInArray.y - from.m_positionInArray.y);
+            return x + y;
         }
 
         private void ColorCheckedCell()
@@ -84,7 +120,8 @@ namespace GridRuntime
             Cell currentParent = startingCell;
             do
             {
-                currentParent.SetCurrentColor();
+                currentParent.SetDestinationColor();
+                Debug.Log("SetCurrentColor");
                 currentParent = currentParent.GetParent();
             } while (currentParent != null);
         }
