@@ -54,7 +54,7 @@ namespace GridRuntime
             propertyMeshRenderer.SetPropertyBlock(propertyBlockEvaluated);
         }
 
-        public void SetEvaluateCurrent()
+        public void SetCurrentColor()
         {
             propertyMeshRenderer.SetPropertyBlock(propertyBlockCurrent);
         }
@@ -93,10 +93,12 @@ namespace GridRuntime
         }
         #endregion
 
+
         #region Utils
 
 
         #endregion
+
 
         #region Privates & Protected
 
