@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace GridRuntime
@@ -78,7 +79,11 @@ namespace GridRuntime
                 _cellToCheck.RemoveAt(0);
                 if (currentCell.gameObject == _destination) {
                     DestinationGoal(currentCell);
-                    if (_pointerToMove) _movePlayer = true;
+                    if (_pointerToMove)
+                    {
+                        _movePlayer = true;
+                        _pointerDestination = _optimalPath.Peek();
+                    }
                 }
                 List<Cell> neighBourCells = new();
                 neighBourCells = _grid.GetNeighbours(currentCell);
@@ -102,19 +107,17 @@ namespace GridRuntime
 
         private void MovePointerToDestination()
         {
-            _optimalPath.Reverse();
-            while(_optimalPath.Count > 0)
-            {
-                if (Vector2.Distance((Vector2) _pointerToMove.transform.position, _optimalPath[0].m_positionInArray) <= 0.2f)
+            Debug.Log(String.Join(", ",_optimalPath)); 
+            //if (_optimalPath.Count >= 0)
+            //{
+                _pointerToMove.transform.position = Vector3.Lerp(_pointerToMove.transform.position, new Vector3(_pointerDestination.m_positionInArray.x + 0.5f, 0, _pointerDestination.m_positionInArray.y + 0.5f), _moveSpeed * Time.deltaTime);
+                if (Vector3.Distance(_pointerToMove.transform.position, new Vector3(_pointerDestination.m_positionInArray.x + 0.5f, 0, _pointerDestination.m_positionInArray.y + 0.5f)) < 0.1f)
                 {
-                    _optimalPath.RemoveAt(0);
+                    if (_optimalPath.Count >0) _pointerDestination = _optimalPath.Pop();
+                    else _movePlayer = false;
                 }
-                else
-                {
-                    _pointerToMove.transform.position = Vector3.MoveTowards(_pointerToMove.transform.position, new Vector3(_optimalPath[0].m_positionInArray.x, _optimalPath[0].m_positionInArray.y), 1f);
-                }
-            }
-            _movePlayer = false;
+            //}
+            
         }
 
         private float StarDistance(Cell from, Cell to)
@@ -139,7 +142,7 @@ namespace GridRuntime
             Cell currentParent = startingCell;
             do
             {   
-                if(currentParent) _optimalPath.Add(currentParent);
+                if(currentParent) _optimalPath.Push(currentParent);
                 currentParent.SetDestinationColor();
                 currentParent = currentParent.GetParent();
             } while (currentParent != null);
@@ -162,16 +165,17 @@ namespace GridRuntime
         [SerializeField] Grid _grid;
         [SerializeField] bool _useAStarAlgorithm;
         [SerializeField] GameObject _pointerToMove;
+        [SerializeField] float _moveSpeed;
         bool _movePlayer = false;
         GameObject _start;
         GameObject _destination;
         List<Cell> _cellToCheck;
         List<Cell> _cellChecked;
-        List<Cell> _optimalPath = new();
+        Stack<Cell> _optimalPath = new();
         bool _pathFindingActivated;
         bool _isFinito= false;
         Cell _parent = null;
-
+        Cell _pointerDestination;
         #endregion
     }
 
