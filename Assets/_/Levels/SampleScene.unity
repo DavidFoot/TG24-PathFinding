@@ -516,6 +516,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _grid: {fileID: 1867740007}
   _useAStarAlgorithm: 1
+  _pointerToMove: {fileID: 1027258627}
 --- !u!4 &1980711049
 Transform:
   m_ObjectHideFlags: 0

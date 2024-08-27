@@ -31,6 +31,7 @@ namespace GridRuntime
                 if(_useAStarAlgorithm) FindAStarPath();
                 else FindAPath();
             }
+            if (_movePlayer) MovePointerToDestination();
         }
 
         #endregion
@@ -77,6 +78,7 @@ namespace GridRuntime
                 _cellToCheck.RemoveAt(0);
                 if (currentCell.gameObject == _destination) {
                     DestinationGoal(currentCell);
+                    if (_pointerToMove) _movePlayer = true;
                 }
                 List<Cell> neighBourCells = new();
                 neighBourCells = _grid.GetNeighbours(currentCell);
@@ -98,6 +100,23 @@ namespace GridRuntime
             }
         }
 
+        private void MovePointerToDestination()
+        {
+            _optimalPath.Reverse();
+            while(_optimalPath.Count > 0)
+            {
+                if (Vector2.Distance((Vector2) _pointerToMove.transform.position, _optimalPath[0].m_positionInArray) <= 0.2f)
+                {
+                    _optimalPath.RemoveAt(0);
+                }
+                else
+                {
+                    _pointerToMove.transform.position = Vector3.MoveTowards(_pointerToMove.transform.position, new Vector3(_optimalPath[0].m_positionInArray.x, _optimalPath[0].m_positionInArray.y), 1f);
+                }
+            }
+            _movePlayer = false;
+        }
+
         private float StarDistance(Cell from, Cell to)
         {
             var x = Mathf.Abs(to.m_positionInArray.x - from.m_positionInArray.x);
@@ -113,15 +132,15 @@ namespace GridRuntime
             }
         }
 
-        private void DestinationGoal(Cell startingCell )
+        private void DestinationGoal(Cell startingCell)
         {
             _isFinito = true;
             ColorCheckedCell();
             Cell currentParent = startingCell;
             do
-            {
+            {   
+                if(currentParent) _optimalPath.Add(currentParent);
                 currentParent.SetDestinationColor();
-                Debug.Log("SetCurrentColor");
                 currentParent = currentParent.GetParent();
             } while (currentParent != null);
         }
@@ -129,7 +148,6 @@ namespace GridRuntime
         public void SetStart(GameObject start) => _start = start;
         
         public void SetDestination(GameObject destination) => _destination = destination;
-
 
         #endregion
 
@@ -143,10 +161,13 @@ namespace GridRuntime
 
         [SerializeField] Grid _grid;
         [SerializeField] bool _useAStarAlgorithm;
+        [SerializeField] GameObject _pointerToMove;
+        bool _movePlayer = false;
         GameObject _start;
         GameObject _destination;
         List<Cell> _cellToCheck;
         List<Cell> _cellChecked;
+        List<Cell> _optimalPath = new();
         bool _pathFindingActivated;
         bool _isFinito= false;
         Cell _parent = null;

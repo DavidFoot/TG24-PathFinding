@@ -36,7 +36,7 @@ namespace GridRuntime
             if (_plane.Raycast(mouseRaycast, out float enter))
             {
                 Vector3 hitPoint = mouseRaycast.GetPoint(enter);
-                _pointer.transform.position = hitPoint;
+                
                 var cell = GetCell(hitPoint);
                 if (UnityEngine.Input.GetMouseButtonDown(0))
                 {
@@ -45,6 +45,7 @@ namespace GridRuntime
                         if (_start == null)
                         {
                             _start = cell;
+                            _pointer.transform.position = hitPoint;
                             cell.GetComponent<Cell>().SetStartColor();
                             _pathFinder.SetStart(cell);
                         }
