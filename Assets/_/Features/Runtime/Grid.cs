@@ -16,11 +16,16 @@ namespace GridRuntime
         private void Awake()
         {
             _gridCellArray = new GameObject[(int)_gridSize.x, (int)_gridSize.y];
-            GridGeneration();
+            if (_useStringSeed) _seed = _stringSeed.GetHashCode();
+            if (_randomizeSeed) _seed = Random.Range(0, 99999);
+            Random.InitState(_seed);
+        }
+        private void Start()
+        {
+            GridGeneration();           
         }
 
         #endregion
-
 
         #region Main methods
 
@@ -102,7 +107,12 @@ namespace GridRuntime
         [SerializeField] Vector2 _gridSize;
         [SerializeField] GameObject _gridCellObject;
         [SerializeField] float _obstacleRatio;
+        [SerializeField] string _stringSeed = "popo";
+        [SerializeField] bool _useStringSeed;
+        [SerializeField] int _seed;
+        [SerializeField] bool _randomizeSeed;
         GameObject[,] _gridCellArray;
+
         
 
 

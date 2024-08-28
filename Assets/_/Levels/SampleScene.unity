@@ -422,6 +422,10 @@ MonoBehaviour:
   _gridCellObject: {fileID: 1275140583142344591, guid: 42036c334c6f3444a8b93736b644a823,
     type: 3}
   _obstacleRatio: 0.25
+  _stringSeed: caca
+  _useStringSeed: 1
+  _seed: 0
+  _randomizeSeed: 0
 --- !u!4 &1867740008
 Transform:
   m_ObjectHideFlags: 0
