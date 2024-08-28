@@ -101,17 +101,24 @@ namespace GridRuntime
 
         private void MovePointerToDestination()
         {
+            
             _movePlayer = true;
             _pointerToMove.transform.position = Vector3.Lerp(_pointerToMove.transform.position, new Vector3(_pointerDestination.m_positionInArray.x + 0.5f, 0, _pointerDestination.m_positionInArray.y + 0.5f), _moveSpeed * Time.deltaTime);
             if (Vector3.Distance(_pointerToMove.transform.position, new Vector3(_pointerDestination.m_positionInArray.x + 0.5f, 0, _pointerDestination.m_positionInArray.y + 0.5f)) < 0.1f)
             {
-                if (_optimalPath.Count > 0) _pointerDestination = _optimalPath.Pop();
+                
+                Debug.Log($"{_stackIndex} < {_maxMoveValue}");
+                if (_optimalPath.Count > 0 && _stackIndex <= _maxMoveValue) {                   
+                    _pointerDestination = _optimalPath.Pop();
+                    _stackIndex++;
+                } 
                 else {
                     _movePlayer = false;
                     _destinationConfirmed = false;
                     ResetGridDataForNewpath();
                     _pointerDestination.SetParent(null);
                     _start = _pointerDestination.gameObject;
+                    _stackIndex = 0;
                 }
             }          
         }
@@ -138,9 +145,16 @@ namespace GridRuntime
             do
             {   
                 if(currentParent) _optimalPath.Push(currentParent);
-                currentParent.SetDestinationColor();
                 currentParent = currentParent.GetParent();
             } while (currentParent != null);
+
+            var stackIndex = 0;
+            foreach (Cell cell in _optimalPath)
+            {               
+                if (stackIndex > _maxMoveValue) { cell.SetErrorColor(); continue; }
+                cell.SetDestinationColor();
+                stackIndex++;
+            }
         }
 
         public void SetStart(GameObject start) => _start = start;
@@ -223,9 +237,9 @@ namespace GridRuntime
         Cell _parent = null;
         Cell _pointerDestination;
         GameObject _previousDestination;
-
+        int _stackIndex;
         #endregion
-    
+
     }
 
 }

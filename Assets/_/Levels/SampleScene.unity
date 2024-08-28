@@ -522,7 +522,7 @@ MonoBehaviour:
   _pointerToMove: {fileID: 1027258627}
   _useAStarAlgorithm: 1
   _moveSpeed: 4
-  _maxMoveValue: 10
+  _maxMoveValue: 5
 --- !u!4 &1980711049
 Transform:
   m_ObjectHideFlags: 0

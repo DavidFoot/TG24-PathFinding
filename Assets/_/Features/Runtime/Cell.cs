@@ -103,11 +103,13 @@ namespace GridRuntime
         {
             return _parent;
         }
+        
         public void SetCoordinate(int x, int y)
         {
             m_positionInArray.x = x;
             m_positionInArray.y = y;
         }
+        
         public bool IsAPath()
         {
             return !m_isAnObstacle;
