@@ -27,6 +27,7 @@ namespace GridRuntime
 
         #endregion
 
+        
         #region Main methods
 
         private void GridGeneration()
@@ -112,9 +113,6 @@ namespace GridRuntime
         [SerializeField] int _seed;
         [SerializeField] bool _randomizeSeed;
         GameObject[,] _gridCellArray;
-
-        
-
 
         #endregion
     }

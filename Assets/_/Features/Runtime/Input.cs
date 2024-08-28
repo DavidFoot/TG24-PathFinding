@@ -37,9 +37,21 @@ namespace GridRuntime
             {
                 Vector3 hitPoint = mouseRaycast.GetPoint(enter);                
                 var cell = GetCell(hitPoint);
+                if (_start != null && _destination == null)
+                {
+                    _pathFinder.SetDestination(cell);
+                    if (UnityEngine.Input.GetMouseButtonDown(0))
+                    {
+                        //cell.GetComponent<Cell>().SetDestinationColor();
+                        //_destination = cell;
+                        //_pathFinder.SetDestination(cell);
+                        _pathFinder.SetDestinationConfirmed(true);
+                    }
+                   
+                }
                 if (UnityEngine.Input.GetMouseButtonDown(0))
                 {
-                    if (cell != null && !cell.GetComponent<Cell>().IsObstacle() && (_start == null || _destination == null))
+                    if (cell != null && !cell.GetComponent<Cell>().IsObstacle())
                     {
                         if (_start == null)
                         {
@@ -48,14 +60,8 @@ namespace GridRuntime
                             cell.GetComponent<Cell>().SetStartColor();
                             _pathFinder.SetStart(cell);
                         }
-                        else if (_destination == null)
-                        {
-                            _destination = cell;
-                            cell.GetComponent<Cell>().SetDestinationColor();
-                            _pathFinder.SetDestination(cell);
-                        }
                     }
-                }
+                }              
                 if (UnityEngine.Input.GetMouseButtonDown(1))
                 {
                     cell.GetComponent<Cell>().SetObstacleColor();

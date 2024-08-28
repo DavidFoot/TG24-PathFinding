@@ -22,17 +22,21 @@ namespace GridRuntime
         private void Awake()
         {
             propertyMeshRenderer = GetComponentInChildren<MeshRenderer>();
+
             propertyBlockStart = new MaterialPropertyBlock();
             propertyBlockDestination = new MaterialPropertyBlock();
             propertyBlockDefault  = new MaterialPropertyBlock();
             propertyBlockObstacle = new MaterialPropertyBlock();
             propertyBlockEvaluated = new MaterialPropertyBlock();
             propertyBlockCurrent = new MaterialPropertyBlock();
+            propertyBlockError = new MaterialPropertyBlock();
+
             propertyBlockStart.SetColor("_BaseColor", Color.blue);
             propertyBlockObstacle.SetColor("_BaseColor", Color.grey);
             propertyBlockDestination.SetColor("_BaseColor", Color.yellow);
             propertyBlockEvaluated.SetColor("_BaseColor", Color.cyan);
             propertyBlockCurrent.SetColor("_BaseColor", Color.magenta);
+            propertyBlockError.SetColor("_BaseColor", Color.red);
             propertyBlockDefault.GetColor("_BaseColor"); 
         }
 
@@ -60,6 +64,12 @@ namespace GridRuntime
         {
             propertyMeshRenderer.SetPropertyBlock(propertyBlockDestination);
         }
+
+        public void SetErrorColor()
+        {
+            propertyMeshRenderer.SetPropertyBlock(propertyBlockError);
+        }
+
         public void SetEvaluateColor()
         {
             propertyMeshRenderer.SetPropertyBlock(propertyBlockEvaluated);
@@ -124,6 +134,7 @@ namespace GridRuntime
         MaterialPropertyBlock propertyBlockDefault;
         MaterialPropertyBlock propertyBlockEvaluated;
         MaterialPropertyBlock propertyBlockCurrent;
+        MaterialPropertyBlock propertyBlockError;
         MeshRenderer propertyMeshRenderer;
         
         

@@ -26,13 +26,13 @@ namespace GridRuntime
                 _pathFindingActivated = true;
                 _cellToCheck.Add(_start.GetComponent<Cell>());
             }
-            // && UnityEngine.Input.GetKeyDown(KeyCode.Space)
-            if (_pathFindingActivated  && !_isFinito)
+            if (_pathFindingActivated  && !_isFinito && _movePlayer == false)
             {
+                if(_cellToCheck.Count == 0) _cellToCheck.Add(_start.GetComponent<Cell>());
                 if (_useAStarAlgorithm) FindAStarPath();
                 else FindAPath();
             }
-            if (_movePlayer) MovePointerToDestination();
+            if (_pointerToMove  && _destinationConfirmed ) MovePointerToDestination();
         }
 
         #endregion
@@ -59,7 +59,7 @@ namespace GridRuntime
                         cell.SetParent(currentCell);
                     }
                 }
-                ColorCheckedCell();
+                //ColorCheckedCell();
                 _cellChecked.Add(currentCell);
                 _cellToCheck.RemoveAt(0);
                 if (_cellToCheck[0].gameObject == _destination) DestinationGoal(_cellToCheck[0]);
@@ -73,17 +73,11 @@ namespace GridRuntime
             {
                 _cellToCheck.Sort((node1, node2) => node1.m_fCostRatio.CompareTo(node2.m_fCostRatio));
                 Cell currentCell = _cellToCheck[0];
-                ColorCheckedCell();
-                currentCell.SetCurrentColor();
                 _cellChecked.Add(currentCell);
                 _cellToCheck.RemoveAt(0);
                 if (currentCell.gameObject == _destination) {
                     DestinationGoal(currentCell);
-                    if (_pointerToMove)
-                    {
-                        _movePlayer = true;
-                        _pointerDestination = _optimalPath.Peek();
-                    }
+                    _pointerDestination = _optimalPath.Peek();
                 }
                 List<Cell> neighBourCells = new();
                 neighBourCells = _grid.GetNeighbours(currentCell);
@@ -107,12 +101,19 @@ namespace GridRuntime
 
         private void MovePointerToDestination()
         {
+            _movePlayer = true;
             _pointerToMove.transform.position = Vector3.Lerp(_pointerToMove.transform.position, new Vector3(_pointerDestination.m_positionInArray.x + 0.5f, 0, _pointerDestination.m_positionInArray.y + 0.5f), _moveSpeed * Time.deltaTime);
             if (Vector3.Distance(_pointerToMove.transform.position, new Vector3(_pointerDestination.m_positionInArray.x + 0.5f, 0, _pointerDestination.m_positionInArray.y + 0.5f)) < 0.1f)
             {
-                if (_optimalPath.Count >0) _pointerDestination = _optimalPath.Pop();
-                else _movePlayer = false;
-            }            
+                if (_optimalPath.Count > 0) _pointerDestination = _optimalPath.Pop();
+                else {
+                    _movePlayer = false;
+                    _destinationConfirmed = false;
+                    ResetGridDataForNewpath();
+                    _pointerDestination.SetParent(null);
+                    _start = _pointerDestination.gameObject;
+                }
+            }          
         }
 
         private float StarDistance(Cell from, Cell to)
@@ -133,7 +134,6 @@ namespace GridRuntime
         private void DestinationGoal(Cell startingCell)
         {
             _isFinito = true;
-            ColorCheckedCell();
             Cell currentParent = startingCell;
             do
             {   
@@ -145,7 +145,22 @@ namespace GridRuntime
 
         public void SetStart(GameObject start) => _start = start;
         
-        public void SetDestination(GameObject destination) => _destination = destination;
+        public void SetDestinationConfirmed(bool isConfirmed) => _destinationConfirmed = isConfirmed;
+
+        public void SetDestination(GameObject destination)
+        {
+            if (destination.GetComponent<Cell>().IsObstacle()) return;
+            if (destination == _previousDestination && _isFinito) {
+                _pathFindingActivated = false;
+                return;
+            }
+            if (destination != _previousDestination && _movePlayer == false) { 
+                ResetGridDataForNewpath();
+                _destination = destination;
+                _isFinito = false;
+            }
+            _previousDestination = destination;
+        } 
 
         public void CheckIfNewPathNeeded(Cell obstacleCell)
         {
@@ -176,7 +191,6 @@ namespace GridRuntime
             {
                 if (!cell.m_isAnObstacle) cell.SetDefaultColor();
             }
-            _destination.GetComponent<Cell>().SetDestinationColor();
             _cellToCheck.Clear();
             _cellChecked.Clear();
             _optimalPath.Clear();
@@ -196,18 +210,22 @@ namespace GridRuntime
         [SerializeField] GameObject _pointerToMove;
         [SerializeField] bool _useAStarAlgorithm;
         [SerializeField] float _moveSpeed;
+        [SerializeField] int _maxMoveValue;
         GameObject _start;
         GameObject _destination;
         List<Cell> _cellToCheck;
         List<Cell> _cellChecked;
         Stack<Cell> _optimalPath = new();
         bool _movePlayer = false;
-        bool _pathFindingActivated;
+        bool _destinationConfirmed = false;
+        bool _pathFindingActivated = false;
         bool _isFinito= false;
         Cell _parent = null;
         Cell _pointerDestination;
+        GameObject _previousDestination;
 
         #endregion
+    
     }
 
 }
