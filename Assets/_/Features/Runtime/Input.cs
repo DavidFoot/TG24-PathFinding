@@ -2,6 +2,7 @@ using PlasticGui.WorkspaceWindow.QueryViews;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Windows;
 
 namespace GridRuntime
 {
@@ -21,8 +22,7 @@ namespace GridRuntime
         }
         private void Update()
         {
-            if((_start == null || _destination == null)) SelectCellOnClick();
-
+             SelectCellOnClick();
         }
 
         #endregion
@@ -35,12 +35,11 @@ namespace GridRuntime
             var mouseRaycast = Camera.main.ScreenPointToRay(UnityEngine.Input.mousePosition);
             if (_plane.Raycast(mouseRaycast, out float enter))
             {
-                Vector3 hitPoint = mouseRaycast.GetPoint(enter);
-                
+                Vector3 hitPoint = mouseRaycast.GetPoint(enter);                
                 var cell = GetCell(hitPoint);
                 if (UnityEngine.Input.GetMouseButtonDown(0))
                 {
-                    if (cell != null && !cell.GetComponent<Cell>().IsObstacle())
+                    if (cell != null && !cell.GetComponent<Cell>().IsObstacle() && (_start == null || _destination == null))
                     {
                         if (_start == null)
                         {
@@ -56,11 +55,15 @@ namespace GridRuntime
                             _pathFinder.SetDestination(cell);
                         }
                     }
-
                 }
-
+                if (UnityEngine.Input.GetMouseButtonDown(1))
+                {
+                    cell.GetComponent<Cell>().SetObstacleColor();
+                    _pathFinder.CheckIfNewPathNeeded(cell.GetComponent<Cell>());
+                }
             }
         }
+
 
         private GameObject GetCell(Vector3 hitPoint)
         {

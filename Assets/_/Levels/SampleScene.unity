@@ -422,7 +422,7 @@ MonoBehaviour:
   _gridCellObject: {fileID: 1275140583142344591, guid: 42036c334c6f3444a8b93736b644a823,
     type: 3}
   _obstacleRatio: 0.25
-  _stringSeed: caca
+  _stringSeed: prout
   _useStringSeed: 1
   _seed: 0
   _randomizeSeed: 0
@@ -519,8 +519,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _grid: {fileID: 1867740007}
-  _useAStarAlgorithm: 1
   _pointerToMove: {fileID: 1027258627}
+  _useAStarAlgorithm: 1
   _moveSpeed: 4
 --- !u!4 &1980711049
 Transform:
